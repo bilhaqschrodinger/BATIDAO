@@ -79,6 +79,12 @@ Taruh foto di `public/team/`, lalu samakan nilai `image` dengan nama file terseb
 - Judul, eyebrow, caption, dan tombol CTA diatur lewat props di `TeamLanyardRailDemo`.
 - Komponen mendukung mode terkontrol (`active`, `flipped`), autoplay, dan label bahasa lewat props `labels`.
 
+## Dokumentasi
+
+- [Panduan kontribusi](./CONTRIBUTING.md)
+- [RAB deployment](./docs/RAB.md) · [versi Excel](./docs/RAB-NO-BATIDAO.xlsx)
+- [Panduan foto tim](./public/team/README.md)
+
 ## Tech stack
 
 - Next.js 16 (App Router)
