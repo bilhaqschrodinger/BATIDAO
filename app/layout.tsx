@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "Team Lanyard Rail",
-  description: "A flip-through team badge rail built with React and Tailwind CSS.",
+  title: "Peta Belajar — Belajar Website",
+  description:
+    "Materi belajar membuat website dari nol: HTML, CSS, layout, responsive, JavaScript, form, aksesibilitas, SEO, sampai hosting.",
 };
 
 export default function RootLayout({
@@ -17,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="id" className={cn("font-sans", geist.variable)}>
       <body className="antialiased">{children}</body>
     </html>
   );

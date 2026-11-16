@@ -1,12 +1,14 @@
-# NO BATIDÃO
+# NO BATIDÃO — Peta Belajar Website
 
-Team wall interaktif: badge lanyard yang bisa di-flip, ditarik, dan digeser. Dibuat dengan Next.js, TypeScript, Tailwind CSS, dan komponen shadcn.
+Situs belajar interaktif tentang **komponen apa saja yang membentuk sebuah website**. Materi disusun bertahap dari HTML sampai deploy, dengan halaman terpisah untuk setiap sub-materi.
 
-Mau ikut mengedit? Baca [CONTRIBUTING.md](./CONTRIBUTING.md) untuk panduan clone, edit data tim, ganti foto, dan alur Git.
+Dibuat dengan Next.js 16 (App Router), React 19, TypeScript, dan Tailwind CSS v4.
+
+Mau ikut mengedit? Baca [CONTRIBUTING.md](./CONTRIBUTING.md) untuk alur clone, edit materi, dan Pull Request.
 
 ## Menjalankan proyek
 
-Prasyarat: **Node.js 20+** dan npm.
+Prasyarat: **Node.js 20.9+** dan npm.
 
 ```bash
 npm install
@@ -23,71 +25,90 @@ npm start          # jalankan hasil build
 npm run typecheck  # cek TypeScript
 ```
 
+## Halaman
+
+| Rute | Isi |
+| --- | --- |
+| `/` | Peta belajar berbentuk folder kaca. Klik folder untuk membuka, klik berkas untuk membaca materi. |
+| `/materi` | Daftar lengkap 11 materi, dikelompokkan per tahap. |
+| `/materi/[slug]` | Halaman satu materi: tujuan, isi, komponen website terkait, latihan, checklist, dan navigasi prev/next. |
+
+Kelompok materi:
+
+- **Mulai** — 00 Peta Belajar
+- **Fondasi** — 01 HTML, 02 CSS, 03 Layout (Flexbox & Grid), 04 Responsive Design
+- **Interaksi** — 05 JavaScript, 06 Form & Validasi
+- **Kualitas** — 07 Aksesibilitas, 08 SEO & Performa
+- **Rilis** — 09 Hosting & Deploy, 10 Cheatsheet
+
 ## Struktur penting
 
-```
+```text
 app/
-  page.tsx                        # halaman utama (render demo)
-  globals.css                     # token warna & tema shadcn
+  page.tsx                     # beranda (render PetaBelajarDemo)
+  materi/page.tsx              # daftar semua materi
+  materi/[slug]/page.tsx       # halaman materi (static generation)
+  layout.tsx                   # metadata & font
+  globals.css                  # token warna & tema
+
 components/
-  ui/team-lanyard-rail.tsx        # komponen lanyard (jangan diubah kecuali perlu)
-  team-lanyard-rail-demo.tsx      # DATA TIM — edit di sini
-public/
-  team/                           # foto anggota
+  peta-belajar-demo.tsx        # isi beranda: folder + berkas materi
+  materi/                      # tampilan halaman materi
+    lesson-view.tsx            # layout halaman, TOC, pager
+    code-block.tsx             # blok kode + tombol salin
+    lesson-checklist.tsx       # checklist progres (localStorage)
+    rich-text.tsx              # render `code`, **tebal**, *miring*
+  ui/glass-folder-cards.tsx    # komponen folder kaca
+
+lib/materi/
+  index.ts                     # daftar LESSONS, LESSON_GROUPS, helper
+  types.ts                     # tipe Lesson, Section, Block
+  00-peta-belajar.ts … 10-cheatsheet.ts   # isi tiap materi
 ```
 
-## Mengedit anggota tim
+## Mengedit atau menambah materi
 
-Semua data ada di `components/team-lanyard-rail-demo.tsx` pada array `LANYARD_DEMO_TEAM`.
-Setiap anggota punya bentuk:
+Semua teks materi adalah data TypeScript, bukan HTML terpisah. Satu materi = satu file.
 
-```tsx
-{
-  id: "Fathir",                 // unik, dipakai sebagai key React
-  name: "Fathir Izzakky",       // nama di badge
-  role: "Founder Batidao",      // jabatan
-  team: "CEO",                  // baris kecil di bawah role
-  tone: 1,                      // warna 1–5 (lihat --chart-1..5 di globals.css)
-  image: "/team/fathir.jpg",       // path foto di folder public
-  bio: "…",                     // teks di balik badge
-  tags: ["CHAMBER", "Zeroks"],  // chip di balik badge (maks. 3 tampil)
-  links: [                      // link kontak di balik badge (maks. 3 tampil)
-    { label: "Email", href: "#" },
-    { label: "Portfolio", href: "#" },
-  ],
-}
-```
+1. **Ubah isi materi** — edit file yang sesuai di `lib/materi/`, misalnya `lib/materi/01-html-struktur.ts`.
+   Bagian yang bisa diubah: `title`, `lead`, `goals`, `components`, `sections`, `exercise`, `checklist`.
+2. **Tambah materi baru** — buat file baru di `lib/materi/`, lalu impor dan masukkan ke array `LESSONS` di `lib/materi/index.ts`, dan tentukan `group`-nya.
+3. **Ubah nama/urutan di beranda** — sesuaikan `files` pada `components/peta-belajar-demo.tsx`. Nilai `href` harus sama dengan `slug` materi.
+4. **Tambah kelompok** — tambahkan entri di `LESSON_GROUPS` (`lib/materi/index.ts`). Daftar di `/materi` dan navigasi kelompok mengikuti data ini.
 
-Catatan:
-- `id` harus unik untuk setiap anggota.
-- `image` diawali `/team/...` karena folder `public/team` dipetakan ke URL `/team`.
-- Nama file foto tidak harus sama dengan `id`.
-- Maksimal 3 `tags` dan 3 `links` yang dirender.
+Materi baru otomatis mendapat halaman di `/materi/<slug>` karena rute memakai `generateStaticParams`.
 
-## Mengganti foto
+### Format teks di dalam data
 
-Taruh foto di `public/team/`, lalu samakan nilai `image` dengan nama file tersebut.
+- `` `kode` `` → ditampilkan sebagai kode inline
+- `**tebal**` → teks tebal
+- `*miring*` → teks miring
 
-- Rasio **1:1 (persegi)**, minimal 400×400 px.
-- Wajah di tengah frame karena foto dipotong bulat.
-- Nama file disarankan huruf kecil tanpa spasi, misalnya `fathir.jpg`.
-- Kalau foto belum ada, komponen otomatis menampilkan siluet abu-abu.
+Blok yang tersedia di `sections[].blocks`: `p` (paragraf), `code` (blok kode), `callout` (tip/warn/info/danger), `table`, dan `list`.
 
-## Kustomisasi tampilan
+## Progres belajar
 
-- Warna badge memakai token `--chart-1` sampai `--chart-5` di `app/globals.css`.
-- Judul, eyebrow, caption, dan tombol CTA diatur lewat props di `TeamLanyardRailDemo`.
-- Komponen mendukung mode terkontrol (`active`, `flipped`), autoplay, dan label bahasa lewat props `labels`.
+Checklist di bagian bawah setiap materi disimpan di `localStorage` browser dengan kunci `bw-progress:<slug>`. Tidak ada server atau database — progres hanya tersimpan di perangkat pengunjung.
+
+## Deploy
+
+Repo ini siap di-deploy ke Vercel tanpa konfigurasi tambahan:
+
+1. Buka [vercel.com/new](https://vercel.com/new), masuk dengan akun GitHub.
+2. Pilih repo `bilhaqschrodinger/BATIDAO`.
+3. Framework terdeteksi otomatis sebagai **Next.js**. Biarkan Build Command dan Output default.
+4. Klik **Deploy**.
+
+Setelah terhubung, setiap `git push` ke `main` otomatis menjadi deploy produksi, dan setiap Pull Request mendapat URL preview sendiri. Jadi situs **tetap bisa diedit setelah deploy** — cukup commit dan push lagi.
 
 ## Dokumentasi
 
 - [Panduan kontribusi](./CONTRIBUTING.md)
 - [RAB deployment](./docs/RAB.md) · [versi Excel](./docs/RAB-NO-BATIDAO.xlsx)
-- [Panduan foto tim](./public/team/README.md)
 
 ## Tech stack
 
-- Next.js 16 (App Router)
+- Next.js 16 (App Router, static generation)
 - React 19
 - TypeScript
 - Tailwind CSS v4
