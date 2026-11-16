@@ -1,5 +1,5 @@
-import PetaBelajarDemo from "@/components/peta-belajar-demo";
+import TeamLanyardRailDemo from "@/components/team-lanyard-rail-demo";
 
 export default function Page() {
-  return <PetaBelajarDemo />;
+  return <TeamLanyardRailDemo />;
 }

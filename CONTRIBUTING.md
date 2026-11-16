@@ -1,18 +1,20 @@
 # Panduan Kontribusi
 
-Terima kasih sudah ikut mengerjakan **NO BATIDÃO — Peta Belajar Website**. Panduan ini untuk teman-teman yang mau memperbaiki materi, menambah contoh, atau mengubah tampilan.
+Terima kasih sudah ikut mengerjakan **NO BATIDÃO**. Panduan ini untuk teman-teman yang mau mengedit data tim, mengganti foto, atau mengubah tampilan.
 
 ## Prasyarat
 
 - [Git](https://git-scm.com/downloads)
-- [Node.js 20.9+](https://nodejs.org) (sudah termasuk npm)
+- [Node.js 20+](https://nodejs.org) (sudah termasuk npm)
 - Editor, misalnya [VS Code](https://code.visualstudio.com)
 
 ## 1. Clone repo
 
+Minta URL repo ke pemilik, lalu:
+
 ```bash
-git clone https://github.com/bilhaqschrodinger/BATIDAO.git
-cd BATIDAO
+git clone https://github.com/USERNAME/no-batidao.git
+cd no-batidao
 npm install
 npm run dev
 ```
@@ -31,37 +33,44 @@ npm run typecheck  # cek error TypeScript
 
 | Mau ubah apa | File |
 | --- | --- |
-| Isi materi (teks, tujuan, latihan, checklist) | `lib/materi/NN-nama-materi.ts` |
-| Urutan / kelompok materi | `lib/materi/index.ts` (`LESSONS`, `LESSON_GROUPS`) |
-| Bentuk blok konten | `lib/materi/types.ts` |
-| Nama berkas & tautan di beranda | `components/peta-belajar-demo.tsx` |
-| Tampilan halaman materi | `components/materi/lesson-view.tsx` |
-| Blok kode & tombol salin | `components/materi/code-block.tsx` |
-| Checklist progres | `components/materi/lesson-checklist.tsx` |
-| Warna, font, tema | `app/globals.css` |
-| Komponen folder kaca | `components/ui/glass-folder-cards.tsx` |
+| Nama, role, team, bio, tags, links, tone | `components/team-lanyard-rail-demo.tsx` |
+| Judul, eyebrow, caption, tombol CTA | `components/team-lanyard-rail-demo.tsx` (bagian `<TeamLanyardRail …>`) |
+| Foto anggota | folder `public/team/` |
+| Warna badge / tema | `app/globals.css` (`--chart-1` … `--chart-5`) |
+| Tampilan komponen lanyard | `components/ui/team-lanyard-rail.tsx` |
 
-### Menambah materi baru
+### Bentuk data anggota
 
-1. Buat file baru di `lib/materi/`, misalnya `lib/materi/11-proyek-akhir.ts`.
-2. Ikuti bentuk `Lesson` dari `lib/materi/types.ts`. Paling mudah: salin file materi yang sudah ada, lalu ubah isinya.
-3. Impor file itu di `lib/materi/index.ts` dan tambahkan ke array `LESSONS` pada urutan yang benar.
-4. Halaman `/materi/<slug>` otomatis dibuat saat build.
-5. Tambahkan juga berkasnya di `components/peta-belajar-demo.tsx` agar muncul di folder beranda.
+```tsx
+{
+  id: "Fathir",                 // unik, jangan disamakan dengan anggota lain
+  name: "Fathir Izzakky",
+  role: "Founder Batidao",
+  team: "CEO",
+  tone: 1,                      // 1–5, menentukan warna
+  image: "/team/fathir.jpg",       // file di public/team
+  bio: "Teks di balik badge",
+  tags: ["CHAMBER", "Zeroks"],  // maksimal 3 yang tampil
+  links: [                      // maksimal 3 yang tampil
+    { label: "Email", href: "#" },
+    { label: "Portfolio", href: "#" },
+  ],
+}
+```
 
-### Format teks
+Tips:
 
-- `` `kode` `` → kode inline
-- `**tebal**` → teks tebal
-- `*miring*` → teks miring
+- `id` harus unik.
+- `image` selalu diawali `/team/` karena `public/team` dipetakan ke URL `/team`.
+- Nama file foto tidak harus sama dengan `id` — yang penting nilainya cocok.
 
-Blok yang didukung di `sections[].blocks`:
+### Foto
 
-- `{ type: "p", text }` — paragraf
-- `{ type: "code", code, label }` — blok kode
-- `{ type: "callout", tone, title, text, code }` — tone: `tip`, `warn`, `info`, `danger`
-- `{ type: "table", head, rows }` — tabel
-- `{ type: "list", ordered, items }` — daftar
+- Taruh file di `public/team/`.
+- Rasio **1:1 (persegi)**, minimal 400×400 px, ideal 800×800 px.
+- Wajah di tengah frame karena foto dipotong bulat.
+- Nama file huruf kecil tanpa spasi, misalnya `fathir.jpg`.
+- Kalau foto belum ada, muncul siluet abu-abu (tidak error).
 
 ## 3. Alur Git
 
@@ -75,21 +84,21 @@ Setelah selesai mengedit:
 
 ```bash
 git add .
-git commit -m "perbaiki contoh materi 03"
+git commit -m "update data tim"
 git push
 ```
 
 ### Perubahan besar: pakai branch + Pull Request
 
 ```bash
-git checkout -b materi-11
+git checkout -b update-tim
 # ...edit...
 git add .
-git commit -m "tambah materi proyek akhir"
-git push -u origin materi-11
+git commit -m "tambah anggota baru"
+git push -u origin update-tim
 ```
 
-Lalu buka Pull Request di GitHub. Setiap PR otomatis mendapat URL preview di Vercel, jadi perubahan bisa dicek dulu sebelum masuk ke situs utama.
+Lalu buka Pull Request di GitHub.
 
 ## 4. Alternatif tanpa terminal
 
@@ -97,26 +106,17 @@ Bisa juga lewat browser:
 
 1. Buka repo di GitHub → masuk ke file → klik ikon **pensil**.
 2. Edit → **Commit changes**.
-3. Untuk file baru, pakai **Add file → Create new file**.
+3. Upload foto: **Add file → Upload files** ke folder `public/team/`.
 
-Cara ini cocok untuk perbaikan kecil seperti salah ketik. Untuk mengedit banyak materi sekaligus, clone lokal lebih nyaman.
-
-## 5. Deploy otomatis
-
-Situs terhubung ke Vercel melalui repo GitHub:
-
-- Push ke `main` → deploy produksi baru.
-- Pull Request → URL preview khusus untuk PR itu.
-
-Tidak ada langkah deploy manual. Setelah perubahan di-merge, tunggu beberapa detik sampai build selesai.
+Cara ini cocok untuk perubahan kecil; untuk mengedit banyak data sekaligus lebih nyaman clone lokal.
 
 ## Supaya tidak bentrok
 
 - `git pull` sebelum mulai dan sebelum push.
-- Satu orang satu file materi; kalau harus mengedit file yang sama, koordinasikan dulu.
-- Jangan commit `node_modules/`, `.next/`, `AGENTS.md`, atau file `.env` (sudah di-`.gitignore`).
+- Hindari dua orang mengedit baris yang sama bersamaan.
+- Jangan commit `node_modules/`, `.next/`, atau file `.env` (sudah di-`.gitignore`).
 - Kalau `package.json` berubah, jalankan `npm install` lagi.
-- Kompres gambar besar (disarankan < 5 MB per file).
+- Kompres foto besar (disarankan < 5 MB per file).
 
 ## Sebelum push
 
@@ -126,8 +126,3 @@ Pastikan build dan TypeScript lolos:
 npm run typecheck
 npm run build
 ```
-
-## Catatan
-
-- Progres checklist pengunjung disimpan di `localStorage` (`bw-progress:<slug>`), bukan di server.
-- Komponen tim (lanyard) masih tersimpan di `components/team-lanyard-rail.tsx` dan `components/team-lanyard-rail-demo.tsx`, tetapi tidak lagi dipakai di beranda.
